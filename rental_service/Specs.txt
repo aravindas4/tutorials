@@ -1,0 +1,21 @@
+RESTful API for an app of a bike rental service. This service has automated stations2 around a city. Users can rent a bike using a mobile app. All stations are connected to the same server, as is the app. Stations know when a request to release a bike is made and when a bike is returned to a station. To rent a bike, the user follows these steps:
+
+Before going to a station, the user sees on the app the list of all stations. Each station has a name, a latitude and longitude location, and a numeric identifier. Also, the app shows the quantity of available bikes on each station. This is useful because some stations may not have bikes available for rent, i.e., all have been rented.
+The user goes to one of the stations with available bikes.
+Once at the station, the user decides which bike they want. Like the stations, each bike has a number.
+The user rents a bike by inputting on the app the station number, the available bike number, and the destination station number.
+The station releases the chosen bike.
+The user rides the bike.
+After the ride, the user returns the bike to the destination station they specified.
+Besides the bike rental itself, the service has other additional constraints and features:
+
+O'REILLY ONLINE LEARNING
+
+Learn faster. Dig deeper. See farther.
+Join O'Reilly's online learning platform. Get a free trial today and find answers on the fly, or master something new and useful.
+
+Learn more
+Each user can only rent one bike at a time.
+The user can see the history of their rentals, including the current active rental (if one exists). The history of rentals includes rental start dates and end dates.
+After a rental, the user can change the destination station through the app. However, this change is allowed only during the first 10 minutes after the rent.
+The user can also cancel the current active rental within 10 minutes. After canceling, the user must return the bike to the same station it was taken from.

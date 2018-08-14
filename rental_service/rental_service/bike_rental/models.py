@@ -1,7 +1,7 @@
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save, post_delete
-
+from datetime import datetime
 # Create your models here.
 
 class Base(models.Model):
@@ -11,7 +11,7 @@ class Base(models.Model):
 	modified = models.DateTimeField(auto_now=True)
 
 class Station(Base):
-	name                    = models.CharField(max_length=20, null=True)
+	name                    = models.CharField(max_length=20)
 	latitude                = models.IntegerField(default=0)
 	longitude               = models.IntegerField(default=0)
 	bike_available_quantity = models.IntegerField(default=0)
@@ -24,10 +24,10 @@ class Station(Base):
 		return self.name
 
 class Rent(Base):
-	origin_station          = models.ForeignKey(Station,on_delete=models.CASCADE, default=0, related_name="origin_for_rents")
-	destination_station     = models.ForeignKey(Station,on_delete=models.CASCADE, default=0, related_name="destination_for_rents")
-	startdate               = models.DateField(null=True)
-	enddate                 = models.DateField(null=True)
+	origin_station          = models.ForeignKey(Station,on_delete=models.CASCADE, related_name="origin_for_rents")
+	destination_station     = models.ForeignKey(Station,on_delete=models.CASCADE, related_name="destination_for_rents")
+	startdate               = models.DateTimeField(default=datetime.now)
+	enddate                 = models.DateTimeField(null=True)
 	is_active               = models.BooleanField(default=False)
 
 	class Meta:
@@ -44,19 +44,14 @@ class Rent(Base):
 			self.origin_station.bike_available_quantity -=1
 			self.origin_station.save()
 		else:
-			print("{}".format(self.id))
-			if not self.enddate and self.is_active:
+			if self.enddate and self.is_active:
 				self.is_active = False
-				print(self.destination_station.bike_available_quantity)
 				self.destination_station.bike_available_quantity +=1
-				print(self.destination_station.bike_available_quantity)
-
-				print(*args, **kwargs)
 				self.destination_station.save()
 		super(Rent, self).save(*args, **kwargs)
 
 @receiver(post_delete, sender=Rent)
 def rent_post_delete(sender, instance, **kwargs):
-	if instance.origin_station != instance.destination_station:
+	if instance.is_active:
 		instance.origin_station.bike_available_quantity +=1
 		instance.origin_station.save()

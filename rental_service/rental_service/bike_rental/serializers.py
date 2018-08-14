@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from bike_rental.models import Station, Rent
+from datetime import datetime
 
 class StationSerializer(serializers.HyperlinkedModelSerializer):
     origin_for_rents = serializers.HyperlinkedRelatedField(
@@ -56,8 +57,9 @@ class RentSerializer(serializers.HyperlinkedModelSerializer):
     def validate(self, data):
         enddate = data.get('enddate', None)
         startdate = data.get('startdate', None)
+        buffer_time = 600.0
         if enddate:
-            data["is_active"] = False
             if startdate and startdate > enddate:
                 raise serializers.ValidationError({"Rent":"Startdate is greater than Enddate."})
+            if (datetime.now() - startdate).total_seconds() > 
         return data
